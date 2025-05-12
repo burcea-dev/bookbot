@@ -1,38 +1,41 @@
-from stats import get_num_words
-from stats import get_count_letter
-from stats import sorting
+import sys
+from stats import (
+    get_num_words,
+    chars_dict_to_sorted_list,
+    get_chars_dict,
+)
 
-def get_book_text(path_to_file):
-    with open(path_to_file) as f:
-        return f.read()
 
 def main():
-    path = "books/frankenstein.txt"
-    text = get_book_text(path)
+    if len(sys.argv) < 2:
+        print("Usage: python3 main.py <path_to_book>")
+        sys.exit(1)
+    book_path = sys.argv[1]
 
-    # Get word count
-    word_count = get_num_words(text)
+    text = get_book_text(book_path)
+    num_words = get_num_words(text)
+    chars_dict = get_chars_dict(text)
+    chars_sorted_list = chars_dict_to_sorted_list(chars_dict)
+    print_report(book_path, num_words, chars_sorted_list)
 
-    # Get character counts
-    dictionary = get_count_letter(text)
 
-    # Get sorted list of character dictionaries
-    dictionary_two = sorting(dictionary)
+def get_book_text(path):
+    with open(path) as f:
+        return f.read()
 
-    # Print the report
+
+def print_report(book_path, num_words, chars_sorted_list):
     print("============ BOOKBOT ============")
-    print("Analyzing book found at {path}")
+    print(f"Analyzing book found at {book_path}...")
     print("----------- Word Count ----------")
-    print(f"Found {word_count} total words")
+    print(f"Found {num_words} total words")
     print("--------- Character Count -------")
+    for item in chars_sorted_list:
+        if not item["char"].isalpha():
+            continue
+        print(f"{item['char']}: {item['num']}")
 
-    # Print each character and its count (alphabetical characters only)
-    for char_dict in dictionary_two:
-        char = char_dict["char"]
-        if char.isalpha():
-            print(f"{char}: {char_dict['num']}")
-    
-    print ("============= END ===============")
+    print("============= END ===============")
 
 
 main()
